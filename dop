@@ -1,0 +1,74 @@
+from tkinter import *
+import pymysql
+
+class App:
+    def __init__(self):
+        self.cnx = pymysql.connect(host='localhost',
+                                   user='pk111',
+                                   password='1234',
+                                   database='pk111')
+        self.cur = self.cnx.cursor()
+
+        win = Tk()
+        win.title('da')
+        win.geometry('400x400')
+
+        title_lbl = Label(text='Процессоры')
+        name_lbl = Label(text='Название')
+        man_lbl = Label(text='Производитель')
+        fr_lbl = Label(text='Частота')
+        sok_lbl =  Label(text='Сокет')
+
+        title_entry = Entry()
+        self.name_ent = Entry()
+        self.man_ent = Entry()
+        self.fr_ent = Entry()
+        self.sok_ent = Entry()
+
+        add_btn = Button(text='Добавить', height=6, command=self.get_db_info)
+
+        self.list = []
+        self.list_var = Variable(value=self.list)
+        list_view = Listbox(listvariable=self.list_var,width=55)
+
+        style = {"padx":5, "pady":5, "sticky":"W"}
+
+        list_view.grid(row=0,column=0,columnspan=3, **style)
+        name_lbl.grid(row=1,column=0,**style)
+        man_lbl.grid(row=2,column=0,**style)
+        fr_lbl.grid(row=3,column=0,**style)
+        sok_lbl.grid(row=4,column=0,**style)
+
+        self.name_ent.grid(row=1,column=1,**style)
+        self.man_ent.grid(row=2,column=1,**style)
+        self.fr_ent.grid(row=3,column=1,**style)
+        self.sok_ent.grid(row=4,column=1,**style)
+
+        add_btn.grid(row=1,column=2, rowspan=4,**style )
+
+
+
+        win.mainloop()
+
+    def add_item(self):
+        fr = self.fr_ent.get()
+        name = self.name_ent.get()
+        sok = self.sok_ent.get()
+        man = self.man_ent.get()
+        if name and man and fr and sok:
+            tmp = f"Название: {name}, Производитель: {man}, Частота: {fr}, Сокет: {sok}"
+            self.list.append(tmp)
+            self.list_var.set(self.list)
+
+    def get_db_info(self):
+        self.cur.execute("SELECT * FROM proc")
+        ans = self.cur.fetchall()
+        print(ans)
+        for item in ans:
+            print(item)
+            print(f"name: {item[1]},manuf: {item[2]}, freq: {item[3]}")
+
+
+
+
+myApp = App()
